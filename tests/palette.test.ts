@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { palette, resolve, scaleNames, steps } from "#/src/palette.ts";
+import {
+  palette,
+  resolve,
+  roleBindings,
+  roleScaleNames,
+  scaleNames,
+  steps
+} from "#/src/palette.ts";
 import Color from "colorjs.io";
+import palette100 from "./fixtures/palette-1.0.0.json" with { type: "json" };
 
 describe("palette", () => {
   it("has ten #rrggbb steps per scale, from 50 to 900", () => {
@@ -23,9 +31,12 @@ describe("palette", () => {
       "info.300": resolve("info.300"),
       "info.400": resolve("info.400"),
       "primary.400": resolve("primary.400"),
+      "purple.300": resolve("purple.300"),
+      "purple.400": resolve("purple.400"),
       "secondary.200": resolve("secondary.200"),
       "success.300": resolve("success.300"),
-      "tertiary.200": resolve("tertiary.200")
+      "tertiary.200": resolve("tertiary.200"),
+      "yellow.100": resolve("yellow.100")
     }).toEqual({
       "error.600": "#e3242b",
       "gray.50": "#f6f6f8",
@@ -34,10 +45,34 @@ describe("palette", () => {
       "info.300": "#a3c6ff",
       "info.400": "#6fa8ff",
       "primary.400": "#33b5e5",
+      "purple.300": "#e8adff",
+      "purple.400": "#d77bff",
       "secondary.200": "#9be9f2",
       "success.300": "#7bd88f",
-      "tertiary.200": "#f7d02c"
+      "tertiary.200": "#f7d02c",
+      "yellow.100": "#ffe57a"
     });
+  });
+
+  it("keeps every 1.0.0 scale and hex, apart from the retuned tertiary.100", () => {
+    expect({
+      ...palette.scales,
+      black: palette.black,
+      white: palette.white
+    }).toMatchObject({
+      ...palette100,
+      tertiary: { ...palette100.tertiary, 100: "#ffe57a" }
+    });
+  });
+
+  it("resolves every role step to the same hex as its bound color step", () => {
+    for (const role of roleScaleNames) {
+      for (const step of steps) {
+        expect(resolve(`${role}.${step}`), `${role}.${step}`).toBe(
+          resolve(`${roleBindings[role]}.${step}`)
+        );
+      }
+    }
   });
 
   it("gets darker at every step of every scale", () => {
