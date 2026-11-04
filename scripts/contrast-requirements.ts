@@ -1,4 +1,8 @@
-import { type SemanticTokenName, feedbackStatuses } from "#/src/semantic.ts";
+import {
+  type SemanticTokenName,
+  feedbackStatuses,
+  semanticTokens
+} from "#/src/semantic.ts";
 
 /** The contrast each semantic pairing must reach; the tests check them all. */
 
@@ -13,23 +17,26 @@ export interface ContrastRequirement {
   minimum: number;
 }
 
+/**
+ * Text tokens with no minimum: WCAG 2 exempts disabled controls. The tests fail
+ * for any other text token without a requirement, so none can go unchecked.
+ */
+export const exemptFromContrast: readonly SemanticTokenName[] = [
+  "text-disabled"
+];
+
 const textContrast = 4.5;
 const componentContrast = 3;
 
-const readableOnPage: SemanticTokenName[] = [
-  "text-primary",
-  "text-secondary",
-  "text-muted",
-  "text-placeholder",
-  "text-heading",
-  "text-code",
-  "text-highlight",
-  "text-error",
-  "accent",
-  "link",
-  "link-hover",
-  "link-visited"
-];
+// Text, links and accents read on the page, unless they sit on a fill of their own
+const readableOnPage = (
+  Object.keys(semanticTokens) as SemanticTokenName[]
+).filter(
+  (name) =>
+    /^(?:text-|link|accent)/u.test(name) &&
+    !name.startsWith("text-on-") &&
+    !exemptFromContrast.includes(name)
+);
 
 const ansiColors = [
   "black",

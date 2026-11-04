@@ -137,25 +137,30 @@ A token with a role binds to a role scale, and a token that names a color binds 
 pnpm install
 pnpm test       # unit tests, including every contrast requirement
 pnpm build      # lint, type check, compile and write dist/
+pnpm preview    # write preview/index.html, a page showing every color
 ```
 
 `src/` holds only what the published package runs; `scripts/` holds what runs at build time.
 
-Scripts and tests import project files from the root with `#/`, e.g. `#/src/semantic.ts`, through the `imports` field in `package.json`. Files in `src/` import each other with relative paths instead, because the compiler rewrites only relative `.ts` imports to `.js` in the published output.
+Scripts and tests import project files from the root with `#/`, e.g. `#/src/semantic.ts`, through the `imports` field in `package.json`, and use `./` only for files in the same folder. ESLint rejects `../` there. Files in `src/` import each other with relative paths instead, because the compiler rewrites only relative `.ts` imports to `.js` in the published output.
 
 | File                               | Role                                                                     |
 | ---------------------------------- | ------------------------------------------------------------------------ |
 | `src/index.ts`                     | Public API                                                               |
 | `src/palette.ts`                   | `palette` and `resolve()`                                                |
 | `src/semantic.ts`                  | Layer 2: each semantic token's palette step per theme                    |
-| `src/types.ts`                     | Step and scale names, color reference types                              |
+| `src/types.ts`                     | Step and scale names, role bindings, color reference types               |
 | `src/generated/scales.ts`          | The hex scales, written by `pnpm generate` (git-ignored)                 |
-| `scripts/scale-specs.ts`           | Layer 1 definition: hues, chroma, lightness ladder, www.wxx9248.top pins |
-| `scripts/scale-generator.ts`       | Turns the specs into hex colors with [Color.js](https://colorjs.io)      |
-| `scripts/generate.ts`              | Writes `src/generated/scales.ts`                                         |
-| `scripts/render.ts`                | Renders the palette and semantic tokens as CSS and JSON                  |
-| `scripts/build.ts`                 | Writes the CSS and JSON into `dist/`                                     |
+| `scripts/scales/specs.ts`          | Layer 1 definition: hues, chroma, lightness ladder, www.wxx9248.top pins |
+| `scripts/scales/generator.ts`      | Turns the specs into hex colors with [Color.js](https://colorjs.io)      |
+| `scripts/scales/generate.ts`       | Writes `src/generated/scales.ts`                                         |
+| `scripts/build/render.ts`          | Renders the palette and semantic tokens as CSS and JSON                  |
+| `scripts/build/build.ts`           | Writes the CSS and JSON into `dist/`                                     |
+| `scripts/build/clean.ts`           | Deletes `dist/` before a build                                           |
+| `scripts/preview/page.ts`          | Renders the preview page, styled by `page.css`                           |
+| `scripts/preview/preview.ts`       | Writes `preview/index.html`                                              |
 | `scripts/contrast-requirements.ts` | The contrast every semantic pairing must reach, checked by the tests     |
+| `scripts/project.ts`               | Project paths and package facts shared by the scripts                    |
 
 The generator maps out-of-range colors into sRGB with the CSS Color 4 gamut mapping algorithm. `test`, `typecheck` and `build` run `pnpm generate` first, so you never need to run it yourself. Color.js is a development dependency only: the published package has no runtime dependencies.
 

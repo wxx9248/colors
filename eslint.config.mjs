@@ -100,5 +100,22 @@ export default [
     // Tests spell out literal expectations and nest describe/it blocks
     files: ["tests/**"],
     rules: { "max-nested-callbacks": "off", "no-magic-numbers": "off" }
+  },
+  {
+    // Not for src/, where the compiler rewrites only relative imports
+    files: ["scripts/**", "tests/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              message: "Import from the project root with #/ instead.",
+              regex: "^\\.\\.(/|$)"
+            }
+          ]
+        }
+      ]
+    }
   }
 ];

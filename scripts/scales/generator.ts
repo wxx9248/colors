@@ -4,7 +4,7 @@ import {
   colorScaleNames,
   steps
 } from "#/src/types.ts";
-import { type ScaleSpec, scaleSpecs } from "./scale-specs.ts";
+import { type ScaleSpec, scaleSpecs } from "./specs.ts";
 import Color from "colorjs.io";
 
 // Ladders must give a value for every step; a short one is a spec error

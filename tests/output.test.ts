@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { palette, scaleNames, steps } from "#/src/palette.ts";
-import { paletteCss, semanticCss, tokensJson } from "#/scripts/render.ts";
+import { paletteCss, semanticCss, tokensJson } from "#/scripts/build/render.ts";
 
 describe("generated output", () => {
   it("writes color scales as hex --palette-* properties", () => {

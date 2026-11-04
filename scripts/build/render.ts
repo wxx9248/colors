@@ -10,7 +10,7 @@ import {
   steps
 } from "#/src/palette.ts";
 import { type SemanticTokenName, semanticTokens } from "#/src/semantic.ts";
-import { packageName } from "./project.ts";
+import { packageName } from "#/scripts/project.ts";
 
 /** The files the build writes into dist/; package.json exports each one. */
 export const outputFiles = {

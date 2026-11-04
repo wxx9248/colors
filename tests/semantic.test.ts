@@ -1,7 +1,8 @@
 import { type SemanticTokenName, semanticTokens } from "#/src/semantic.ts";
 import {
   ansiTokens,
-  contrastRequirements
+  contrastRequirements,
+  exemptFromContrast
 } from "#/scripts/contrast-requirements.ts";
 import { colorScaleNames, resolve, roleScaleNames } from "#/src/palette.ts";
 import { describe, expect, it } from "vitest";
@@ -30,6 +31,17 @@ describe("semantic tokens", () => {
       expect(semanticTokens).toHaveProperty(foreground);
       expect(semanticTokens).toHaveProperty(background);
     }
+  });
+
+  it("check every text token unless it is exempt by name", () => {
+    const covered = new Set<string>([
+      ...contrastRequirements.map(({ foreground }) => foreground),
+      ...exemptFromContrast
+    ]);
+    const unchecked = Object.keys(semanticTokens).filter(
+      (name) => name.startsWith("text-") && !covered.has(name)
+    );
+    expect(unchecked).toEqual([]);
   });
 
   it("exempt only the ANSI colors that match a terminal background", () => {
