@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers -- This file is the palette definition: hues, lightness ladders and chroma curves */
-import type { ScaleName, Step } from "#/src/types.ts";
+import type { ColorScaleName, Step } from "#/src/types.ts";
 
 /**
  * Layer 1 definition, used at build time only. pnpm generate turns these specs
@@ -39,54 +39,60 @@ const hueScale = (
   lightness: hueLightness
 });
 
-export const scaleSpecs: Readonly<Record<ScaleName, ScaleSpec>> = {
-  error: hueScale({
-    description: "Red: errors and destructive actions",
-    hue: 26,
-    peakChroma: 0.21,
-    pins: { 600: "#e3242b" }
+export const scaleSpecs: Readonly<Record<ColorScaleName, ScaleSpec>> = {
+  amber: hueScale({
+    description: "Amber",
+    hue: 68,
+    peakChroma: 0.16
+  }),
+  azure: hueScale({
+    description: "Azure (water blue)",
+    hue: 228,
+    peakChroma: 0.13,
+    pins: { 400: "#33b5e5" }
+  }),
+  blue: hueScale({
+    description: "Blue",
+    hue: 259,
+    peakChroma: 0.14,
+    pins: { 300: "#a3c6ff", 400: "#6fa8ff" }
+  }),
+  cyan: hueScale({
+    description: "Cyan",
+    hue: 205,
+    peakChroma: 0.1,
+    pins: { 200: "#9be9f2" }
   }),
   gray: {
     chromaCurve: grayChroma,
-    description: "Cool neutral: backgrounds, text and borders",
+    description: "Cool neutral",
     hue: 286,
     lightness: grayLightness,
     peakChroma: 0.013,
     pins: { 50: "#f6f6f8", 500: "#8d8d96", 900: "#141418" }
   },
-  info: hueScale({
-    description: "Blue: information, also suited to inline code",
-    hue: 259,
-    peakChroma: 0.14,
-    pins: { 300: "#a3c6ff", 400: "#6fa8ff" }
-  }),
-  primary: hueScale({
-    description: "Azure (water blue): links, actions and focus",
-    hue: 228,
-    peakChroma: 0.13,
-    pins: { 400: "#33b5e5" }
-  }),
-  secondary: hueScale({
-    description: "Cyan: headings and secondary emphasis",
-    hue: 205,
-    peakChroma: 0.1,
-    pins: { 200: "#9be9f2" }
-  }),
-  success: hueScale({
-    description: "Green: success and confirmations",
+  green: hueScale({
+    description: "Green",
     hue: 150,
     peakChroma: 0.15,
     pins: { 300: "#7bd88f" }
   }),
-  tertiary: hueScale({
-    description: "Yellow: highlights and accents used sparingly",
+  purple: hueScale({
+    description: "Purple, used sparingly",
+    hue: 315,
+    peakChroma: 0.2,
+    pins: { 300: "#e8adff", 400: "#d77bff" }
+  }),
+  red: hueScale({
+    description: "Red",
+    hue: 26,
+    peakChroma: 0.21,
+    pins: { 600: "#e3242b" }
+  }),
+  yellow: hueScale({
+    description: "Yellow",
     hue: 94,
     peakChroma: 0.17,
-    pins: { 200: "#f7d02c" }
-  }),
-  warning: hueScale({
-    description: "Amber: warnings",
-    hue: 68,
-    peakChroma: 0.16
+    pins: { 100: "#ffe57a", 200: "#f7d02c" }
   })
 };

@@ -37,12 +37,13 @@
     "provenance": true
   },
   "scripts": {
-    "build": "pnpm generate && pnpm lint && pnpm typecheck && node scripts/clean.ts && tsc -p tsconfig.build.json && node scripts/build.ts",
+    "build": "pnpm generate && pnpm lint && pnpm typecheck && node scripts/build/clean.ts && tsc -p tsconfig.build.json && node scripts/build/build.ts",
     "format": "prettier --write .",
-    "generate": "node scripts/generate.ts",
+    "generate": "node scripts/scales/generate.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prepublishOnly": "pnpm build && pnpm test",
+    "preview": "pnpm generate && node scripts/preview/preview.ts",
     "test": "pnpm generate && vitest run",
     "typecheck": "pnpm generate && tsc --noEmit"
   },

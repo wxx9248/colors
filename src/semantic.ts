@@ -46,7 +46,126 @@ function feedbackTokens<Status extends FeedbackStatus>(
   } as Record<`${Status}-${FeedbackPart}`, SemanticToken>;
 }
 
+/**
+ * A terminal theme. The ANSI colors name a color, so they bind to color scales:
+ * rebinding a role must not change the terminal's red. terminal-cyan is azure
+ * because that is how www.wxx9248.top draws the slot.
+ */
+const terminalTokens = {
+  "terminal-bg": {
+    dark: "gray.900",
+    description: "Terminal background",
+    light: "gray.50"
+  },
+  "terminal-black": {
+    dark: "gray.900",
+    description: "ANSI black (matches the dark background by design)",
+    light: "gray.900"
+  },
+  "terminal-blue": {
+    dark: "blue.400",
+    description: "ANSI blue",
+    light: "blue.800"
+  },
+  "terminal-bright-black": {
+    dark: "gray.500",
+    description: "ANSI bright black",
+    light: "gray.700"
+  },
+  "terminal-bright-blue": {
+    dark: "blue.300",
+    description: "ANSI bright blue",
+    light: "blue.700"
+  },
+  "terminal-bright-cyan": {
+    dark: "cyan.200",
+    description: "ANSI bright cyan",
+    light: "cyan.700"
+  },
+  "terminal-bright-green": {
+    dark: "green.200",
+    description: "ANSI bright green",
+    light: "green.700"
+  },
+  "terminal-bright-magenta": {
+    dark: "purple.300",
+    description: "ANSI bright magenta",
+    light: "purple.700"
+  },
+  "terminal-bright-red": {
+    dark: "red.400",
+    description: "ANSI bright red",
+    light: "red.700"
+  },
+  "terminal-bright-white": {
+    dark: "white",
+    description: "ANSI bright white (matches the light background by design)",
+    light: "white"
+  },
+  "terminal-bright-yellow": {
+    dark: "yellow.100",
+    description: "ANSI bright yellow",
+    light: "yellow.700"
+  },
+  "terminal-cursor": {
+    dark: "primary.400",
+    description: "Terminal cursor",
+    light: "primary.700"
+  },
+  "terminal-cursor-text": {
+    dark: "gray.900",
+    description: "Text under the block cursor",
+    light: "white"
+  },
+  "terminal-cyan": {
+    dark: "azure.400",
+    description: "ANSI cyan",
+    light: "azure.800"
+  },
+  "terminal-fg": {
+    dark: "gray.100",
+    description: "Terminal text",
+    light: "gray.900"
+  },
+  "terminal-green": {
+    dark: "green.300",
+    description: "ANSI green",
+    light: "green.800"
+  },
+  "terminal-magenta": {
+    dark: "purple.400",
+    description: "ANSI magenta",
+    light: "purple.800"
+  },
+  "terminal-red": {
+    dark: "red.500",
+    description: "ANSI red",
+    light: "red.800"
+  },
+  "terminal-selection-bg": {
+    dark: "primary.800",
+    description: "Selected terminal text",
+    light: "primary.100"
+  },
+  "terminal-white": {
+    dark: "gray.100",
+    description: "ANSI white (near the light background by design)",
+    light: "gray.300"
+  },
+  "terminal-yellow": {
+    dark: "yellow.200",
+    description: "ANSI yellow",
+    light: "yellow.800"
+  }
+} satisfies Record<string, SemanticToken>;
+
 export const semanticTokens = {
+  // Accent
+  "accent": {
+    dark: "primary.400",
+    description: "The brand color: prompts, tags and indicators",
+    light: "primary.700"
+  },
   // Action
   "action-primary": {
     dark: "primary.400",
@@ -129,10 +248,30 @@ export const semanticTokens = {
     light: "primary.100"
   },
   // Foreground
+  "text-code": {
+    dark: "info.300",
+    description: "Inline code",
+    light: "info.700"
+  },
   "text-disabled": {
     dark: "gray.600",
     description: "Disabled controls (no contrast minimum)",
     light: "gray.400"
+  },
+  "text-error": {
+    dark: "error.400",
+    description: "Error text on the page background",
+    light: "error.700"
+  },
+  "text-heading": {
+    dark: "secondary.200",
+    description: "Headings",
+    light: "secondary.700"
+  },
+  "text-highlight": {
+    dark: "tertiary.200",
+    description: "Search matches and similar highlights",
+    light: "tertiary.700"
   },
   "text-muted": {
     dark: "gray.500",
@@ -163,7 +302,9 @@ export const semanticTokens = {
   ...feedbackTokens("success", "Success"),
   ...feedbackTokens("warning", "Warning"),
   ...feedbackTokens("error", "Error"),
-  ...feedbackTokens("info", "Info")
+  ...feedbackTokens("info", "Info"),
+  // Terminal
+  ...terminalTokens
 } satisfies Record<string, SemanticToken>;
 
 export type SemanticTokenName = keyof typeof semanticTokens;

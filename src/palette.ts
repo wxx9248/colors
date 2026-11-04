@@ -1,20 +1,37 @@
-import type { ColorRef, Scale, ScaleName, Step } from "./types.ts";
+import {
+  type ColorRef,
+  type RoleScaleName,
+  type Scale,
+  type ScaleName,
+  type Step,
+  roleBindings,
+  roleScaleNames
+} from "./types.ts";
 import { scales } from "./generated/scales.ts";
 
 /** Layer 1: raw colors. Sites use the semantic tokens, not these directly. */
 
 export {
   type ColorRef,
+  type ColorScaleName,
+  type RoleScaleName,
   type Scale,
   type ScaleName,
   type Step,
+  colorScaleNames,
+  roleBindings,
+  roleScaleNames,
   scaleNames,
   steps
 } from "./types.ts";
 
+const roleScales = Object.fromEntries(
+  roleScaleNames.map((name) => [name, scales[roleBindings[name]]])
+) as Record<RoleScaleName, Scale>;
+
 export const palette = {
   black: "#000000",
-  scales: scales as Readonly<Record<ScaleName, Scale>>,
+  scales: { ...scales, ...roleScales } as Readonly<Record<ScaleName, Scale>>,
   white: "#ffffff"
 } as const;
 

@@ -2,13 +2,15 @@ import {
   type ColorRef,
   type Scale,
   type ScaleName,
+  colorScaleNames,
   palette,
   resolve,
-  scaleNames,
+  roleBindings,
+  roleScaleNames,
   steps
 } from "#/src/palette.ts";
 import { type SemanticTokenName, semanticTokens } from "#/src/semantic.ts";
-import { packageName } from "./project.ts";
+import { packageName } from "#/scripts/project.ts";
 
 /** The files the build writes into dist/; package.json exports each one. */
 export const outputFiles = {
@@ -32,14 +34,24 @@ function semanticProperty(name: string): string {
   return `${semanticPrefix}${name}`;
 }
 
-/** Layer 1 as --palette-<scale>-<step> custom properties. */
+/**
+ * Layer 1 as --palette-<scale>-<step> custom properties: hex values on the
+ * color scales, and references to them on the role scales.
+ */
 export function paletteCss(): string {
-  const lines = scaleNames.flatMap((name) =>
+  const colorLines = colorScaleNames.flatMap((name) =>
     steps.map(
       (step) =>
         `  ${paletteProperty(`${name}.${step}`)}: ${palette.scales[name][step]};`
     )
   );
+  const roleLines = roleScaleNames.flatMap((name) =>
+    steps.map(
+      (step) =>
+        `  ${paletteProperty(`${name}.${step}`)}: var(${paletteProperty(`${roleBindings[name]}.${step}`)});`
+    )
+  );
+  const lines = [...colorLines, ...roleLines];
   lines.push(`  ${paletteProperty("white")}: ${palette.white};`);
   lines.push(`  ${paletteProperty("black")}: ${palette.black};`);
   return `${banner}\n:root {\n${lines.join("\n")}\n}\n`;

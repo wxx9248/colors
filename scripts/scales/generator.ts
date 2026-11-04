@@ -1,5 +1,10 @@
-import { type Scale, type ScaleName, scaleNames, steps } from "#/src/types.ts";
-import { type ScaleSpec, scaleSpecs } from "./scale-specs.ts";
+import {
+  type ColorScaleName,
+  type Scale,
+  colorScaleNames,
+  steps
+} from "#/src/types.ts";
+import { type ScaleSpec, scaleSpecs } from "./specs.ts";
 import Color from "colorjs.io";
 
 // Ladders must give a value for every step; a short one is a spec error
@@ -36,8 +41,8 @@ function generateScale(spec: ScaleSpec): Scale {
   ) as Scale;
 }
 
-export function generateScales(): Record<ScaleName, Scale> {
+export function generateScales(): Record<ColorScaleName, Scale> {
   return Object.fromEntries(
-    scaleNames.map((name) => [name, generateScale(scaleSpecs[name])])
-  ) as Record<ScaleName, Scale>;
+    colorScaleNames.map((name) => [name, generateScale(scaleSpecs[name])])
+  ) as Record<ColorScaleName, Scale>;
 }

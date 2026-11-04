@@ -1,4 +1,4 @@
-import { distDir } from "./project.ts";
+import { distDir } from "#/scripts/project.ts";
 import { rmSync } from "node:fs";
 
 // The TypeScript compiler never deletes old output, so removed files would linger

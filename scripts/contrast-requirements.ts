@@ -1,26 +1,65 @@
-import { type SemanticTokenName, feedbackStatuses } from "#/src/semantic.ts";
+import {
+  type SemanticTokenName,
+  feedbackStatuses,
+  semanticTokens
+} from "#/src/semantic.ts";
 
 /** The contrast each semantic pairing must reach; the tests check them all. */
 
+type Theme = "dark" | "light";
+
 export interface ContrastRequirement {
   background: SemanticTokenName;
+  // The theme where the two match by design, so the minimum doesn't apply
+  exemptTheme?: Theme | undefined;
   foreground: SemanticTokenName;
   // WCAG 2: 4.5 for text, 3 for UI components such as borders and focus rings
   minimum: number;
 }
 
+/**
+ * Text tokens with no minimum: WCAG 2 exempts disabled controls. The tests fail
+ * for any other text token without a requirement, so none can go unchecked.
+ */
+export const exemptFromContrast: readonly SemanticTokenName[] = [
+  "text-disabled"
+];
+
 const textContrast = 4.5;
 const componentContrast = 3;
 
-const readableOnPage: SemanticTokenName[] = [
-  "text-primary",
-  "text-secondary",
-  "text-muted",
-  "text-placeholder",
-  "link",
-  "link-hover",
-  "link-visited"
-];
+// Text, links and accents read on the page, unless they sit on a fill of their own
+const readableOnPage = (
+  Object.keys(semanticTokens) as SemanticTokenName[]
+).filter(
+  (name) =>
+    /^(?:text-|link|accent)/u.test(name) &&
+    !name.startsWith("text-on-") &&
+    !exemptFromContrast.includes(name)
+);
+
+const ansiColors = [
+  "black",
+  "red",
+  "green",
+  "yellow",
+  "blue",
+  "magenta",
+  "cyan",
+  "white"
+] as const;
+
+/** The 16 ANSI colors. Each names a color, so it binds to a color scale. */
+export const ansiTokens = ansiColors.flatMap(
+  (color) => [`terminal-${color}`, `terminal-bright-${color}`] as const
+);
+
+// ANSI black and white are the terminal's own backgrounds in one theme
+const ansiExemptions: Partial<Record<(typeof ansiTokens)[number], Theme>> = {
+  "terminal-black": "dark",
+  "terminal-bright-white": "light",
+  "terminal-white": "light"
+};
 
 export const contrastRequirements: readonly ContrastRequirement[] = [
   ...readableOnPage.map((foreground) => ({
@@ -66,5 +105,26 @@ export const contrastRequirements: readonly ContrastRequirement[] = [
       foreground: `${status}-solid`,
       minimum: componentContrast
     }
-  ])
+  ]),
+  {
+    background: "terminal-bg",
+    foreground: "terminal-fg",
+    minimum: textContrast
+  },
+  ...ansiTokens.map((foreground) => ({
+    background: "terminal-bg" as const,
+    exemptTheme: ansiExemptions[foreground],
+    foreground,
+    minimum: textContrast
+  })),
+  {
+    background: "terminal-bg",
+    foreground: "terminal-cursor",
+    minimum: componentContrast
+  },
+  {
+    background: "terminal-selection-bg",
+    foreground: "terminal-fg",
+    minimum: textContrast
+  }
 ];

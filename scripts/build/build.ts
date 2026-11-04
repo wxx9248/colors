@@ -1,4 +1,4 @@
-import { distDir, fromRoot, jsonIndent } from "./project.ts";
+import { distDir, fromRoot, jsonIndent } from "#/scripts/project.ts";
 import {
   indexCss,
   outputFiles,
