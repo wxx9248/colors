@@ -1,0 +1,61 @@
+{
+  "name": "@wxx9248/colors",
+  "version": "0.1.0",
+  "description": "wxx9248's color system",
+  "license": "AGPL-3.0-only",
+  "author": "wxx9248",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wxx9248/colors.git"
+  },
+  "type": "module",
+  "packageManager": "pnpm@12.17.0",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./index.css": "./dist/index.css",
+    "./palette.css": "./dist/palette.css",
+    "./semantic.css": "./dist/semantic.css",
+    "./tokens.json": "./dist/tokens.json"
+  },
+  "imports": {
+    "#/*": "./*"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "pnpm generate && pnpm lint && pnpm typecheck && node scripts/clean.ts && tsc -p tsconfig.build.json && node scripts/build.ts",
+    "format": "prettier --write .",
+    "generate": "node scripts/generate.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prepublishOnly": "pnpm build && pnpm test",
+    "test": "pnpm generate && vitest run",
+    "typecheck": "pnpm generate && tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "colorjs.io": "^0.7.1",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0"
+  }
+}

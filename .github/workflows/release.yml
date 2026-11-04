@@ -1,0 +1,84 @@
+name: Release
+
+# Run by hand from the Actions tab: builds and tests the package, bumps the
+# version in package.json, opens a pull request with the bump, publishes to npm,
+# then tags the release commit and creates a GitHub release.
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Semver field to bump
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      # Push the release branch and tag, and create the GitHub release
+      contents: write
+      pull-requests: write
+      # Lets npm verify where the package was built (provenance) and, once a
+      # trusted publisher is configured on npmjs.com, publish without a token
+      id-token: write
+    env:
+      BUMP: ${{ inputs.bump }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Reads the pnpm version from "packageManager" in package.json
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      # The release gate: lint, type check, compile, then the unit tests
+      - run: pnpm build
+
+      - run: pnpm test
+
+      - name: Bump the version
+        id: version
+        run: |
+          pnpm version "$BUMP" --no-git-tag-version
+          echo "tag=v$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Open a pull request with the bump
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --create "release/$TAG"
+          git commit --all --message "Release $TAG"
+          git push origin "release/$TAG"
+          gh pr create --base "$GITHUB_REF_NAME" --head "release/$TAG" \
+            --title "Release $TAG" \
+            --body "Bumps the $BUMP version for $TAG, which this run publishes to npm."
+
+      # prepublishOnly builds and tests again, now at the new version
+      - run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag the release commit and create a GitHub release
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git tag "$TAG"
+          git push origin "$TAG"
+          gh release create "$TAG" --title "$TAG" --generate-notes --verify-tag
